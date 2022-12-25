@@ -57,6 +57,9 @@ namespace ItsForFree
             zero.y += giveAway.thisCollider.bounds.size.y + box.spaceAnswers;
             box.dialogueText.minTextBoxY = zero.y - box.spaceAnswers + box.spaceTextFirstAnswer;
             box.dialogueButtons[numButtons] = giveAway;
+
+            // proper fix for end dialogue button being locked
+            box.dialogueButtons[numButtons - 1].Locked = false;
         }
 
         [HarmonyPrefix, HarmonyPatch(typeof(DialogueBox), "OnPotionRequestEnd")]
