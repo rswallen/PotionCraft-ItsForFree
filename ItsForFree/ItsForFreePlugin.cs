@@ -3,7 +3,7 @@ using HarmonyLib;
 
 namespace ItsForFree
 {
-    [BepInPlugin("com.github.rswallen.potioncraft.itsforfree", "It's For Free", "1.0.1")]
+    [BepInPlugin("com.github.rswallen.potioncraft.itsforfree", "It's For Free", "1.0.2")]
     public class ItsForFreePlugin : BaseUnityPlugin
     {
         private void Awake()
