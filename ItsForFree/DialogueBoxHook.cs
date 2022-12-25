@@ -1,5 +1,4 @@
-﻿using BepInEx.Logging;
-using HarmonyLib;
+﻿using HarmonyLib;
 using PotionCraft.DialogueSystem.Dialogue;
 using PotionCraft.DialogueSystem.Dialogue.Data;
 using PotionCraft.LocalizationSystem;
@@ -7,24 +6,19 @@ using PotionCraft.ManagersSystem;
 using PotionCraft.ManagersSystem.TMP;
 using PotionCraft.ObjectBased.UIElements.Dialogue;
 using PotionCraft.Settings;
-using PotionCraft.Utils.Dissolve.DissolvableRenderers;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using UnityEngine;
 
 namespace ItsForFree
 {
     internal static class DialogueBoxHook
     {
-        //private static ManualLogSource Log => ItsForFreePlugin.Log;
-
         private static DialogueButton giveAway = null;
 
         [HarmonyPostfix, HarmonyPatch(typeof(DialogueBox), "SpawnPotionRequestInterface")]
         public static void SpawnPotionRequestInterface_Postfix(PotionRequestNodeData potionRequestNodeData, DialogueData dialogueData)
         {
-            //Log.LogDebug("SpawnPotionRequestInterface - Adding extra button to dialogueBox for potion request");
             var box = Managers.Dialogue.dialogueBox;
 
             // make the button array bigger
@@ -40,14 +34,14 @@ namespace ItsForFree
             }
 
             giveAway = DialogueBox.dialogueButtonSpawner.Spawn(box.dialogueButtonObjects.Length - box.dialogueButtons.Length + numButtons, zero);
-            Key leftTextKey = new Key("#dialogue_closeness_give_potion", new List<string>
+            Key leftTextKey = new("#dialogue_closeness_give_potion", new List<string>
             {
                 ""
             }, false);
             string commonAtlasName = Settings<TMPManagerSettings>.Asset.CommonAtlasName;
-            Key rightTextKey = new Key("#haggle_with_clients_popularity_tooltip", new List<string>
+            Key rightTextKey = new("#haggle_with_clients_popularity_tooltip", new List<string>
             {
-                "0<voffset=-0.15em><size=130%><sprite=\"" + commonAtlasName + "\" name=\"Gold Icon Dialogue Locked\"></size>, 2x<voffset=-0.15em><size=130%><sprite=\"" + commonAtlasName + "\" name=\"ReputeIcon Haggle\"></size>"
+                "0<voffset=-0.15em><size=130%><sprite=\"" + commonAtlasName + "\" name=\"Gold Icon Dialogue Locked\"></size></voffset>, 2x<voffset=-0.15em><size=130%><sprite=\"" + commonAtlasName + "\" name=\"ReputeIcon Haggle\"></size></voffset>"
             }, false);
             Action actionOnRelease = giveAway.actionOnRelease;
             if (actionOnRelease == null)
@@ -68,7 +62,7 @@ namespace ItsForFree
         [HarmonyPrefix, HarmonyPatch(typeof(DialogueBox), "OnPotionRequestEnd")]
         public static void OnPotionRequestEnd_Prefix()
         {
-            //Log.LogDebug("OnPotionRequestEnd - Cleaning up");
+            giveAway.Locked = false;
             giveAway = null;
         }
 
@@ -79,7 +73,6 @@ namespace ItsForFree
             {
                 if (index == 5)
                 {
-                    //Log.LogDebug("ChooseAnswer - Activating intercept and setting index to 0 (sell)");
                     index = 0;
                     NpcTradingHook.Intercept = true;
                 }

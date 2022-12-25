@@ -22,15 +22,15 @@
   
   <ItemGroup>
     <Reference Include="PotionCraft.DataBaseSystem">
-      <HintPath>..\..\..\PotionCraftLibs\PotionCraft.DataBaseSystem.dll</HintPath>
+      <HintPath>..\..\PotionCraftLibs\PotionCraft.DataBaseSystem.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="PotionCraft.Scripts">
-      <HintPath>..\..\..\PotionCraftLibs\PotionCraft.Scripts.dll</HintPath>
+      <HintPath>..\..\PotionCraftLibs\PotionCraft.Scripts.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="PotionCraft.Settings">
-      <HintPath>..\..\..\PotionCraftLibs\PotionCraft.Settings.dll</HintPath>
+      <HintPath>..\..\PotionCraftLibs\PotionCraft.Settings.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>
