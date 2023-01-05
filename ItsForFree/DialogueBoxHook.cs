@@ -1,4 +1,5 @@
-﻿using HarmonyLib;
+﻿using BepInEx.Configuration;
+using HarmonyLib;
 using PotionCraft.DialogueSystem.Dialogue;
 using PotionCraft.DialogueSystem.Dialogue.Data;
 using PotionCraft.LocalizationSystem;
@@ -8,6 +9,7 @@ using PotionCraft.ObjectBased.UIElements.Dialogue;
 using PotionCraft.Settings;
 using System;
 using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 
 namespace ItsForFree
@@ -38,20 +40,14 @@ namespace ItsForFree
             {
                 ""
             }, false);
-            string commonAtlasName = Settings<TMPManagerSettings>.Asset.CommonAtlasName;
-            Key rightTextKey = new("#haggle_with_clients_popularity_tooltip", new List<string>
-            {
-                "0<voffset=-0.15em><size=130%><sprite=\"" + commonAtlasName + "\" name=\"Gold Icon Dialogue Locked\"></size></voffset>, 2x<voffset=-0.15em><size=130%><sprite=\"" + commonAtlasName + "\" name=\"ReputeIcon Haggle\"></size></voffset>"
-            }, false);
+            
             Action actionOnRelease = giveAway.actionOnRelease;
-            if (actionOnRelease == null)
+            actionOnRelease ??= delegate ()
             {
-                actionOnRelease = delegate ()
-                {
-                    box.ChooseAnswer(5);
-                };
-            }
-            giveAway.SetContent(leftTextKey, rightTextKey, box.givePotionIcon, actionOnRelease, numButtons, null, null, 1f);
+                box.ChooseAnswer(5);
+            };
+
+            giveAway.SetContent(leftTextKey, GetRightKey(), box.givePotionIcon, actionOnRelease, numButtons, null, null, 1f);
             giveAway.SetAlpha(0f);
             giveAway.Locked = true;
             zero.y += giveAway.thisCollider.bounds.size.y + box.spaceAnswers;
@@ -89,7 +85,6 @@ namespace ItsForFree
             NpcTradingHook.Intercept = false;
         }
 
-
         [HarmonyPostfix, HarmonyPatch(typeof(DialogueBox), "UpdateTradeButtons")]
         public static void UpdateTradeButtons_Postfix()
         {
@@ -100,6 +95,50 @@ namespace ItsForFree
                     giveAway.Locked = Managers.Dialogue.dialogueBox.tradeButton.Locked;
                 }
             }
+        }
+
+        public static void ConfigUpdated(object sender, SettingChangedEventArgs args)
+        {
+            if (giveAway != null)
+            {
+                giveAway.rightText.SetText(GetRightKey());
+            }
+        }
+
+        public static Key GetRightKey()
+        {
+            string commonAtlasName = Settings<TMPManagerSettings>.Asset.CommonAtlasName;
+
+            StringBuilder builder = new("0<voffset=-0.15em><size=130%><sprite=\"");
+            builder.Append(commonAtlasName);
+            builder.Append("\" name=\"Gold Icon Dialogue Locked\"></size></voffset>");
+
+            bool mult = Settings.Multiplier != 1f;
+            bool add = Settings.Additive != 0;
+
+            if (mult)
+            {
+                builder.Append(", ");
+                builder.Append(Settings.Multiplier);
+                builder.Append("x<voffset=-0.15em><size=130%><sprite=\"");
+                builder.Append(commonAtlasName);
+                builder.Append("\" name=\"ReputeIcon Haggle\"></size></voffset>");
+                if (add)
+                {
+                    builder.Append("+");
+                    builder.Append(Settings.Additive);
+                }
+            }
+            else if (add)
+            {
+                builder.Append(", +");
+                builder.Append(Settings.Additive);
+                builder.Append("<voffset=-0.15em><size=130%><sprite=\"");
+                builder.Append(commonAtlasName);
+                builder.Append("\" name=\"ReputeIcon Haggle\"></size></voffset>");
+            }
+
+            return new Key("#haggle_with_clients_popularity_tooltip", new List<string> { builder.ToString() }, false);
         }
     }
 }

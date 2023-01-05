@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using PotionCraft.Npc.MonoBehaviourScripts;
+using UnityEngine;
 
 namespace ItsForFree
 {
@@ -13,7 +14,7 @@ namespace ItsForFree
             if (Intercept)
             {
                 gold = 0;
-                popularity *= 2;
+                popularity = Mathf.CeilToInt(Settings.Multiplier * popularity) + Settings.Additive;
                 Intercept = false;
             }
         }
